@@ -579,32 +579,11 @@ sim=function(DF){
     
     
     if(input$M11=='m111' | input$M11=='m113' | input$M11=='m117'){
-      
-      # if(input$PMeanL==""){Bmean<-NULL}
-      # else{
-        # tas<- sub("[c]",",",c(1,1))
-        # tas1<- sub("[(]",",",tas)
-        # tas2<- sub("[)]",",",tas1)
-        # s3<- strsplit(tas2,",")
-        # s4<- c(sapply(s3, as.numeric))
-        # Bmean<- s4[!is.na(s4)]
-      # }
+
       Bmean<- hot_to_r(input$hotPmean)[,1]
       
       Bvar<- solve(as.matrix(hot_to_r(input$hotPvar)))
-      
-      # if(input$PVarL==""){Bvar<-NULL}
-      # else{
-        # tas3<- sub("[c]",",",c(1,0,0,1))
-        # tas4<- sub("[(]",",",tas3)
-        # tas5<- sub("[)]",",",tas4)
-        # s5<- strsplit(tas5,",")
-        # s6<- c(sapply(s5, as.numeric))
-        # s6<- s6[!is.na(s6)]
-        # n1<- 2
-        # Bvar<- solve(matrix(s6,byrow=TRUE,n1,n1))
-      # }
-      
+
       if(input$PShL==""){a<-NULL}
       else{
         a<- isolate(as.numeric(input$PShL))
@@ -618,27 +597,7 @@ sim=function(DF){
     
     if(input$M11=='m112'){
       
-      # if(input$PMeanL==""){Bmean<-0}
-      # else{
-      #   tas<- sub("[c]",",",isolate(input$PMeanL))
-      #   tas1<- sub("[(]",",",tas)
-      #   tas2<- sub("[)]",",",tas1)
-      #   s3<- strsplit(tas2,",")
-      #   s4<- c(sapply(s3, as.numeric))
-      #   Bmean<- s4[!is.na(s4)]
-      # }
-      # 
-      # if(input$PVarL==""){Bvar<-0}
-      # else{
-      #   tas3<- sub("[c]",",",isolate(input$PVarL))
-      #   tas4<- sub("[(]",",",tas3)
-      #   tas5<- sub("[)]",",",tas4)
-      #   s5<- strsplit(tas5,",")
-      #   s6<- c(sapply(s5, as.numeric))
-      #   s6<- s6[!is.na(s6)]
-      #   n1<- ncol(sumtextM1a()$X) 
-      #   Bvar<- solve(matrix(s6,byrow=TRUE,n1,n1))
-      # }  
+
       Bmean<- hot_to_r(input$hotPmean)[,1]
       Bvar<- solve(as.matrix(hot_to_r(input$hotPvar)))
     }
@@ -654,42 +613,11 @@ sim=function(DF){
       if(naMP==0){Xa=NULL} else {Xa=as.matrix(XMP[,1:(pMP*naMP)])}
       if(ndMP==0){Xd=NULL} else {Xd=as.matrix(XMP[,(pMP*naMP+1):ncol(XMP)])}
       XMPP<- Xcreate(pMP, naMP, ndMP, Xa=Xa, Xd=Xd, INT = TRUE, DIFF = TRUE, base = nn)
-      
-      # if(input$PMeanLMP==""){BmeanyMP<-NULL}
-      # else{
-      #   tasyMP<- sub("[c]",",",isolate(input$PMeanLMP))
-      #   tas1yMP<- sub("[(]",",",tasyMP)
-      #   tas2yMP<- sub("[)]",",",tas1yMP)
-      #   s3yMP<- strsplit(tas2yMP,",")
-      #   s4yMP<- c(sapply(s3yMP, as.numeric))
-      #   BmeanyMP<- s4yMP[!is.na(s4yMP)]
-      # }
-      BmeanyMP<- hot_to_r(input$hotPmeanLP)[,1]
-      # if(input$PVarLMP==""){BvaryMP<-NULL}
-      # else{
-      #   tas3yMP<- sub("[c]",",",isolate(input$PVarLMP))
-      #   tas4yMP<- sub("[(]",",",tas3yMP)
-      #   tas5yMP<- sub("[)]",",",tas4yMP)
-      #   s5yMP<- strsplit(tas5yMP,",")
-      #   s6yMP<- c(sapply(s5yMP, as.numeric))
-      #   s6yMP<- s6yMP[!is.na(s6yMP)]
-      #   n1yMP<- naMP+(ndMP+1)*(pMP-1) 
-      #   BvaryMP<- solve(matrix(s6yMP,byrow=TRUE,n1yMP,n1yMP))
-      # }
+
       BmeanyMP<- hot_to_r(input$hotPmeanLP)[,1]
       BvaryMP<-solve(as.matrix(hot_to_r(input$hotPvarLP)))
       
-      # if(input$PVarLIWMP==""){VMP<-NULL}
-      # else{
-      #   tas3iwMP<- sub("[c]",",",isolate(input$PVarLIWMP))
-      #   tas4iwMP<- sub("[(]",",",tas3iwMP)
-      #   tas5iwMP<- sub("[)]",",",tas4iwMP)
-      #   s5iwMP<- strsplit(tas5iwMP,",")
-      #   s6iwMP<- c(sapply(s5iwMP, as.numeric))
-      #   s6iwMP<- s6iwMP[!is.na(s6iwMP)]
-      #   VMP<- matrix(s6iwMP,byrow=TRUE,pMP-1,pMP-1)
-      # }
-      
+
       VMP<-solve(as.matrix(hot_to_r(input$hotPvarLP)))
       
       if(input$PShLIWMP==""){nuMP<-NULL}
@@ -707,28 +635,7 @@ sim=function(DF){
       if(naMP==0){Xa=NULL} else {Xa=as.matrix(XMP[,1:(pMP*naMP)])}
       if(ndMP==0){Xd=NULL} else {Xd=as.matrix(XMP[,(pMP*naMP+1):ncol(XMP)])}
       XMPP<- Xcreate(pMP, naMP, ndMP, Xa=Xa, Xd=Xd, INT = TRUE, DIFF = FALSE, base = nn)
-      
-      # if(input$PMeanLMP==""){BmeanyMP<-NULL}
-      # else{
-      #   tasyMP<- sub("[c]",",",isolate(input$PMeanLMP))
-      #   tas1yMP<- sub("[(]",",",tasyMP)
-      #   tas2yMP<- sub("[)]",",",tas1yMP)
-      #   s3yMP<- strsplit(tas2yMP,",")
-      #   s4yMP<- c(sapply(s3yMP, as.numeric))
-      #   BmeanyMP<- s4yMP[!is.na(s4yMP)]
-      # }
-      # 
-      # if(input$PVarLMP==""){BvaryMP<-NULL}
-      # else{
-      #   tas3yMP<- sub("[c]",",",isolate(input$PVarLMP))
-      #   tas4yMP<- sub("[(]",",",tas3yMP)
-      #   tas5yMP<- sub("[)]",",",tas4yMP)
-      #   s5yMP<- strsplit(tas5yMP,",")
-      #   s6yMP<- c(sapply(s5yMP, as.numeric))
-      #   s6yMP<- s6yMP[!is.na(s6yMP)]
-      #   n1yMP<- naMP+(ndMP+1)*(pMP-1) 
-      #   BvaryMP<- solve(matrix(s6yMP,byrow=TRUE,n1yMP,n1yMP))
-      # }
+
       BmeanyMP<- hot_to_r(input$hotPmeanLP)[,1]
       BvaryMP<-solve(as.matrix(hot_to_r(input$hotPvarLP)))
       
@@ -736,28 +643,7 @@ sim=function(DF){
     
     if(input$M11=='m116'){
       
-      # if(input$PMeanL==""){Bmean<-NULL}
-      # else{
-      #   tas<- sub("[c]",",",isolate(input$PMeanL))
-      #   tas1<- sub("[(]",",",tas)
-      #   tas2<- sub("[)]",",",tas1)
-      #   s3<- strsplit(tas2,",")
-      #   s4<- c(sapply(s3, as.numeric))
-      #   Bmean<- s4[!is.na(s4)]
-      # }
-      # 
-      # if(input$PVarL==""){Bvar<-NULL}
-      # else{
-      #   tas3<- sub("[c]",",",isolate(input$PVarL))
-      #   tas4<- sub("[(]",",",tas3)
-      #   tas5<- sub("[)]",",",tas4)
-      #   s5<- strsplit(tas5,",")
-      #   s6<- c(sapply(s5, as.numeric))
-      #   s6<- s6[!is.na(s6)]
-      #   n1<- ncol(sumtextM1a()$X) 
-      #   Bvar<- solve(matrix(s6,byrow=TRUE,n1,n1))
-      # }
-      
+
       Bmean<- hot_to_r(input$hotPmean)[,1]
       Bvar<- solve(as.matrix(hot_to_r(input$hotPvar)))
       Bmeancut=NULL
@@ -767,53 +653,13 @@ sim=function(DF){
         Bvarcut=solve(as.matrix(hot_to_r(input$hotCvar)))
       }
       
-      # if(input$PMeanLcut==""){Bmeancut<-NULL}
-      # else{
-      #   tas6<- sub("[c]",",",isolate(input$PMeanLcut))
-      #   tas7<- sub("[(]",",",tas6)
-      #   tas8<- sub("[)]",",",tas7)
-      #   s7<-strsplit(tas8,",")
-      #   s8<-c(sapply(s7, as.numeric))
-      #   Bmeancut<-s8[!is.na(s8)]
-      # }
-      # 
-      # if(input$PVarLcut==""){Bvarcut<-NULL}
-      # else{
-      #   tas9<- sub("[c]",",",isolate(input$PVarLcut))
-      #   tas10<- sub("[(]",",",tas9)
-      #   tas11<- sub("[)]",",",tas10)
-      #   s9<-strsplit(tas11,",")
-      #   s10<-c(sapply(s9, as.numeric))
-      #   s10<-s10[!is.na(s10)]
-      #   n2<-max(sumtextM1a()$y)-2
-      #   Bvarcut<- solve(matrix(s10,byrow=TRUE,n2,n2))
-      # }
+      
+      
     }
     
     if(input$M11=='m118'){
       
-      # if(input$PMeanL==""){Bmean<-0}
-      # else{
-      #   tas<- sub("[c]",",",isolate(input$PMeanL))
-      #   tas1<- sub("[(]",",",tas)
-      #   tas2<- sub("[)]",",",tas1)
-      #   s3<- strsplit(tas2,",")
-      #   s4<- c(sapply(s3, as.numeric))
-      #   Bmean<- s4[!is.na(s4)]
-      # }
-      # 
-      # if(input$PVarL==""){Bvar<-0}
-      # else{
-      #   tas3<- sub("[c]",",",isolate(input$PVarL))
-      #   tas4<- sub("[(]",",",tas3)
-      #   tas5<- sub("[)]",",",tas4)
-      #   s5<- strsplit(tas5,",")
-      #   s6<- c(sapply(s5, as.numeric))
-      #   s6<- s6[!is.na(s6)]
-      #   n1<- ncol(sumtextM1a()$X) 
-      #   Bvar<- solve(matrix(s6,byrow=TRUE,n1,n1))
-      # }
-      
+     
       Bmean<- hot_to_r(input$hotPmean)[,1]
       Bvar<- solve(as.matrix(hot_to_r(input$hotPvar)))
       
@@ -839,27 +685,7 @@ sim=function(DF){
     }
     if(input$M11=='m119'){
       
-      # if(input$PMeanL==""){Bmean<-0}
-      # else{
-      #   tas<- sub("[c]",",",isolate(input$PMeanL))
-      #   tas1<- sub("[(]",",",tas)
-      #   tas2<- sub("[)]",",",tas1)
-      #   s3<- strsplit(tas2,",")
-      #   s4<- c(sapply(s3, as.numeric))
-      #   Bmean<- s4[!is.na(s4)]
-      # }
-      # 
-      # if(input$PVarL==""){Bvar<-0}
-      # else{
-      #   tas3<- sub("[c]",",",isolate(input$PVarL))
-      #   tas4<- sub("[(]",",",tas3)
-      #   tas5<- sub("[)]",",",tas4)
-      #   s5<- strsplit(tas5,",")
-      #   s6<- c(sapply(s5, as.numeric))
-      #   s6<- s6[!is.na(s6)]
-      #   n1<- ncol(sumtextM1a()$X) 
-      #   Bvar<- solve(matrix(s6,byrow=TRUE,n1,n1))
-      # }
+      
       
       Bmean<- hot_to_r(input$hotPmean)[,1]
       Bvar<- solve(as.matrix(hot_to_r(input$hotPvar)))
