@@ -1,0 +1,6 @@
+To do:
+
+- Add buttons js for waiting
+- reduce shp size
+- Add other graphical options to map: ggplot
+- Fix encoding of all files UTF-8

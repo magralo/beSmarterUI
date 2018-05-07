@@ -1,0 +1,1026 @@
+getRegs=function(f){
+  if(f==""){
+    return("null")
+  }
+  nv=unlist(gregexpr(pattern ='~',f))
+  f=substr(f, nv+1,nchar(f))
+  regs="hola"
+  desde=1
+  i=1
+  while(i<=nchar(f)){
+    if(substr(f, i,i)=='+'){
+      regs=c(regs,substr(f, desde,i-1))
+      desde=i+1
+    }
+    i=i+1
+  }
+  regs=c(regs,substr(f, desde,nchar(f)))
+  
+  regs=regs[-1]
+  return(regs)
+}
+
+getRegs2=function(f){
+  if(f==""){
+    return("null")
+  }
+  nv=unlist(gregexpr(pattern ='~',f))
+  f=substr(f, nv+1,nchar(f)-2)
+  regs="hola"
+  desde=1
+  i=1
+  while(i<=nchar(f)){
+    if(substr(f, i,i)=='+'){
+      regs=c(regs,substr(f, desde,i-1))
+      desde=i+1
+    }
+    i=i+1
+  }
+  regs=c(regs,substr(f, desde,nchar(f)))
+  
+  regs=regs[-1]
+  return(regs)
+}
+
+isRegs=function(f,rn){
+  rnf=getRegs(f)
+  bool=sum((rnf==rn)*1)
+  return(bool==length(rn))
+}
+
+sim=function(DF){
+  if(nrow(DF)>1){
+    DF1=DF
+    DF1[lower.tri(DF, diag = TRUE)]= 0
+    DF=DF1+t(DF1)+diag(diag(as.matrix(DF)))
+  }
+  return(DF)
+}
+#output$univariate <- renderUI({
+  
+  ######Data NavBar 1. Models #########
+  rv=reactiveValues(
+    warningSDP=""
+  )
+  dataInput1 <- reactive({
+    inFile1 <- input$file1
+    if (is.null(inFile1))
+      return(NULL)
+    read.csv(inFile1$datapath, header=input$header1, sep=input$sep1)
+  })
+  
+  ######Formulas NavBar 1. Models ######### 
+  
+  sumtextM1a <- reactive({
+    model.formula(input$Formula1a,dataInput1())
+  })
+  
+  sumtextM1b <- reactive({
+    model.formula(input$Formula1b,dataInput1())
+  })
+  
+
+  ####### Output UI #####
+  ##### 1.1 ########
+  output$ui11 <- renderUI({
+    if (input$M11=='m110'){
+      return()}
+    else{
+      switch(input$M11,
+             "m111" = isolate(wellPanel(fluidRow(column(3,FormulaM1A),column(9,HTForm)),
+                                        helpText("Introduce prior mean vector location parameters"),
+                                        rHandsontableOutput("hotPmean"),
+                                        helpText("Introduce prior covariances location parameters by row. It has to be symmetric"),
+                                        rHandsontableOutput("hotPvar"),
+                                        fluidRow(column(3,Psh),column(3,Psc)),
+                                        fluidRow(column(3,HTsh),column(3,HTsc)))),
+             "m112" = isolate(wellPanel(fluidRow(column(3,FormulaM1A),column(9,HTForm)),
+                                        
+                                        helpText("Introduce prior mean vector location parameters"),
+                                        rHandsontableOutput("hotPmean"),
+                                        helpText("Introduce prior covariances location parameters by row. It has to be symmetric"),
+                                        rHandsontableOutput("hotPvar")
+                                        )),
+             "m113" = isolate(wellPanel(fluidRow(column(3,FormulaM1A),column(9,HTForm)),
+                                        helpText("Introduce prior mean vector location parameters"),
+                                        rHandsontableOutput("hotPmean"),
+                                        helpText("Introduce prior covariances location parameters by row. It has to be symmetric"),
+                                        rHandsontableOutput("hotPvar"))),
+             "m114" = isolate(wellPanel(fluidRow(column(3,MultPnn),column(6,FormulaM1B)),
+                                        fluidRow(column(3,HTMultPnn), column(9,HTFormMP)),
+                                        fluidRow(column(4,MultPy),column(4,MultPXA),column(4,MultPXD)),
+                                        fluidRow(column(4,HTMultPy),column(4,HTMultPXA),column(4,HTMultPXD)),
+                                        helpText("Introduce prior mean vector location parameters"),
+                                        rHandsontableOutput("hotPmeanLP"),
+                                        helpText("Introduce prior covariances location parameters by row. It has to be symmetric"),
+                                        rHandsontableOutput("hotPvarLP"),
+                                        helpText("Introduce scale matrix Inverse Wishart distribution"),
+                                        rHandsontableOutput("hotPvarLP2"),
+                                        fluidRow(column(3,PshIWMP)),
+                                        fluidRow(column(3,HTshIWMP))
+                                        #fluidRow(column(3,PMeanMP),column(3,PVarMP),column(3,PVarIWMP),column(3,PshIWMP)),
+                                        #fluidRow(column(3,HTMMP),column(3,HTVMP),column(3,HTVIWMP),column(3,HTshIWMP))
+                                        )),
+             "m115" = isolate(wellPanel(fluidRow(column(3,MultPnn),column(6,FormulaM1B)),
+                                        fluidRow(column(3,HTMultPnn), column(9,HTFormMP)),
+                                        fluidRow(column(4,MultPy),column(4,MultPXA),column(4,MultPXD)),
+                                        fluidRow(column(4,HTMultPy),column(4,HTMultPXA),column(4,HTMultPXD)),
+                                        #fluidRow(column(3,PMeanMP),column(3,PVarMP),column(3,it4)),
+                                        #fluidRow(column(3,HTMMP),column(3,HTVMP),column(3,HTPtst))
+                                        helpText("Introduce prior mean vector location parameters"),
+                                        rHandsontableOutput("hotPmeanLP"),
+                                        helpText("Introduce prior covariances location parameters by row. It has to be symmetric"),
+                                        rHandsontableOutput("hotPvarLP"),
+                                        fluidRow(column(3,it4)),
+                                        fluidRow(column(3,HTPtst))
+                                        )),
+             "m116" = isolate(wellPanel(fluidRow(column(3,FormulaM1A),column(9,HTFormOP)),
+                                        #fluidRow(column(3,PMean),column(3,PVar),column(3,PMeanCut),column(3,PVarCut)),
+                                        #fluidRow(column(3,HTM),column(3,HTV),column(3,HTMCut),column(3,HTVCut))
+                                        helpText("Introduce prior mean vector location parameters"),
+                                        rHandsontableOutput("hotPmean"),
+                                        helpText("Introduce prior covariances location parameters by row. It has to be symmetric"),
+                                        rHandsontableOutput("hotPvar"), 
+                                        m116numAlt,
+                                        #fluidRow(column(3,HTM),column(3,HTV),column(3,HTMCut),column(3,HTVCut)),
+                                        helpText("Introduce prior mean for cut points"),  
+                                        rHandsontableOutput("hotCmean"),
+                                        helpText("Introduce prior covariances for cut points"),                                        
+                                        rHandsontableOutput("hotCvar")
+                                        )),
+             "m117" = isolate(wellPanel(fluidRow(column(3,FormulaM1A),column(9,HTForm)),
+                                        helpText("Introduce prior mean vector location parameters"),
+                                        rHandsontableOutput("hotPmean"),
+                                        helpText("Introduce prior covariances location parameters by row. It has to be symmetric"),
+                                        rHandsontableOutput("hotPvar"), 
+                                        fluidRow(column(3,Psh1),column(3,Psc1)),
+                                        fluidRow(column(3,HTsh),column(3,HTsc)))),
+             "m118" =isolate(wellPanel(fluidRow(column(3,FormulaM1A),column(9,HTForm)),
+                                       fluidRow(column(3,Below),column(3,HTBelow),column(3,Above),column(3,HTAbove)),
+                                       helpText("Introduce prior mean vector location parameters"),
+                                       rHandsontableOutput("hotPmean"),
+                                       helpText("Introduce prior covariances location parameters by row. It has to be symmetric"),
+                                       rHandsontableOutput("hotPvar"), 
+                                       fluidRow(column(3,Psh),column(3,Psc)),
+                                       fluidRow(column(3,HTsh),column(3,HTsc)))),
+             "m119" =isolate(wellPanel(fluidRow(column(3,FormulaM1A),column(9,HTForm)),
+                                       fluidRow(column(3,tau),column(9,HTtau)),
+                                       helpText("Introduce prior mean vector location parameters"),
+                                       rHandsontableOutput("hotPmean"),
+                                       helpText("Introduce prior covariances location parameters by row. It has to be symmetric"),
+                                       rHandsontableOutput("hotPvar")
+                                       ))
+      )
+    }
+  })
+  
+  output$hotPmean=renderRHandsontable({
+    
+    if(is.null(input$hotPmean) ){
+      nv = 1
+      f=input$Formula1a
+      
+      DF=data.frame("Prior mean"=rep(0,nv))
+      if (input$M11=="m116"){
+        rownames(DF)=getRegs2(f)
+      }else{
+        rownames(DF)=getRegs(f)
+      }
+      
+    }else{
+      DF=hot_to_r(input$hotPmean)
+      if (input$M11=="m116"){
+        rn=rownames(DF)
+      }else{
+        rn=rownames(DF)[-1]
+      }
+      f=input$Formula1a
+      if(!identical(rn,getRegs(f))){
+          f=input$Formula1a
+          nv=unlist(gregexpr(pattern ='~',f))
+          
+          if(nv==-1){
+            nv = 1
+            DF=data.frame("Prior mean"=rep(0,nv))
+            rownames(DF)="null"
+          }else{
+            
+            if (input$M11=="m116"){
+              regs=getRegs2(f)
+              DF=data.frame("Prior mean"=rep(0,length(regs)))
+              rownames(DF)=regs
+            }else{
+              regs=getRegs(f)
+              DF=data.frame("Prior mean"=rep(0,length(regs)+1))
+              rownames(DF)=c("cte",regs)
+            }
+            
+            
+          }
+          
+      }
+      
+    }
+    DF$Prior.mean=as.numeric(DF$Prior.mean)
+    
+    rhandsontable(DF)%>% 
+      hot_col("Prior.mean",format="0.01")
+    
+  })
+  
+  output$hotPvar=renderRHandsontable({
+    
+    if(is.null(input$hotPvar) ){
+      nv = 1
+      f=input$Formula1a
+      
+      DF=data.frame("Prior mean"=0)
+      if (input$M11=="m116"){
+        rownames(DF)=getRegs2(f)
+        colnames(DF)=getRegs2(f)
+      }else{
+        rownames(DF)=getRegs(f)
+        colnames(DF)=getRegs(f)
+      }
+  
+    }else{
+      DF=hot_to_r(input$hotPvar)
+      if (input$M11=="m116"){
+        rn=rownames(DF)
+      }else{
+        rn=rownames(DF)[-1]
+      }
+      f=input$Formula1a
+      if(!identical(rn,getRegs(f))){
+        f=input$Formula1a
+        nv=unlist(gregexpr(pattern ='~',f))
+        
+        if(nv==-1){
+          nv = 1
+          DF=data.frame("Prior mean"=0)
+          rownames(DF)="null"
+        }else{
+          
+          regs=getRegs(f)
+          
+          if (input$M11=="m116"){
+            DF=data.frame(diag(length(regs)))
+            rownames(DF)=c(getRegs2(f))
+            colnames(DF)=c(getRegs2(f))
+          }else{
+            DF=data.frame(diag(length(regs)+1))
+            rownames(DF)=c("cte",getRegs(f))
+            colnames(DF)=c("cte",getRegs(f))
+          }
+          
+        }
+        
+      }
+      
+    }
+    DF=sim(DF)
+    x=as.matrix(DF)
+    bool=is.positive.semi.definite(x, tol=1e-8)
+    if(bool){
+      rv$warningSDP=""
+    rhandsontable(DF)%>%
+      hot_cols(renderer = "
+               function (instance, td, row, col, prop, value, cellProperties) {
+               Handsontable.renderers.TextRenderer.apply(this, arguments);
+               if (col < row) {
+               td.style.background = 'black';
+               } 
+               }")
+    }else{
+      showNotification("Watch out! the red covariance matrix is not positive semi definite")
+      rhandsontable(DF)%>%
+        hot_cols(renderer = "
+                 function (instance, td, row, col, prop, value, cellProperties) {
+                 Handsontable.renderers.TextRenderer.apply(this, arguments);
+                 
+                 td.style.background = 'red';
+                 
+                 }")
+      
+    }
+    
+  })
+  
+  
+  
+  
+  output$hotCvar=renderRHandsontable({
+    
+    if(is.null(input$hotCvar) ){
+      nv = input$m116numAlt-2
+      if(nv>0){
+        DF=as.data.frame(diag(nv))
+        rownames(DF)=paste("cut",1:nv)
+        colnames(DF)=paste("cut",1:nv)
+      }else{
+        DF=data.frame("No cut points"=0)
+      }
+      
+    }else{
+      DF=hot_to_r(input$hotCvar)
+      nc=ncol(DF)
+      if (input$m116numAlt>2){
+        if(colnames(DF)=="No.cut.points"){
+          nv = input$m116numAlt-2
+          DF=as.data.frame(diag(nv))
+          rownames(DF)=paste("cut",1:nv)
+          colnames(DF)=paste("cut",1:nv)
+        }
+        if(nc!=input$m116numAlt-2){
+          nv = input$m116numAlt-2
+          DF=as.data.frame(diag(nv))
+          rownames(DF)=paste("cut",1:nv)
+          colnames(DF)=paste("cut",1:nv)
+        }
+      }
+ 
+    }
+    DF=sim(DF)
+    x=as.matrix(DF)
+    bool=is.positive.semi.definite(x, tol=1e-8)
+    if(bool){
+      rv$warningSDP=""
+      rhandsontable(DF)%>%
+        hot_cols(renderer = "
+                 function (instance, td, row, col, prop, value, cellProperties) {
+                 Handsontable.renderers.TextRenderer.apply(this, arguments);
+                 if (col < row) {
+                 td.style.background = 'black';
+                 } 
+                 }")
+    }else{
+      showNotification("Watch out! the red covariance matrix is not positive semi definite")
+      rhandsontable(DF)%>%
+        hot_cols(renderer = "
+                 function (instance, td, row, col, prop, value, cellProperties) {
+                 Handsontable.renderers.TextRenderer.apply(this, arguments);
+                 
+                 td.style.background = 'red';
+                 
+                 }")
+      
+    }
+    
+  })
+  
+
+  
+  output$hotCmean=renderRHandsontable({
+    
+    if(is.null(input$hotCmean) ){
+      nv = input$m116numAlt-2
+      if(nv>0){
+      DF=data.frame("Prior cut p"=rep(0,nv))
+      DF$Prior.cut.p=as.numeric(DF$Prior.cut.p)
+      rownames(DF)=paste("cut",1:nv)
+      }else{
+        DF=data.frame("No cut points"=0)
+      }
+      
+    }else{
+      DF=hot_to_r(input$hotCmean)
+      nc=nrow(DF)
+      if (input$m116numAlt>2){
+        if(colnames(DF)=="No.cut.points"){
+          nv = input$m116numAlt-2
+          DF=data.frame("Prior cut p"=rep(0,nv))
+          rownames(DF)=paste("cut",1:nv)
+          
+        }
+        if(nc!=input$m116numAlt-2){
+          nv = input$m116numAlt-2
+          DF=data.frame("Prior cut p"=rep(0,nv))
+          rownames(DF)=paste("cut",1:nv)
+          
+        }
+      }
+    }
+    
+    cn=colnames(DF)[1]
+    if(cn=="Prior.cut.p"){
+      DF$Prior.cut.p=as.numeric(DF$Prior.cut.p)
+    rhandsontable(DF)%>% 
+      hot_col("Prior.cut.p",format="0.01")
+    }else{
+      DF$No.cut.points=as.numeric(DF$No.cut.points)
+      rhandsontable(DF)%>% 
+        hot_col("No.cut.points",format="0.01")
+    }
+    
+  })
+  
+  
+  
+  output$hotPmeanLP=renderRHandsontable({
+    
+    if(is.null(input$hotPmean) ){
+      p=as.numeric(input$MultPLy)
+      tit="mean"
+      if(is.na(p)){
+        p=3
+        tit="Check number of alternatives"
+      }
+      a1=as.numeric(input$MultPLXA)
+      ap=as.numeric(input$MultPLXD)
+      n=a1+ap*(p-1)
+      DF=data.frame(tit=rep(0,n))
+      colnames(DF)=tit
+      
+    }else{
+      p=as.numeric(input$MultPLy)
+      tit="mean"
+      if(is.na(p)){
+        p=3
+        tit="Check number of alternatives"
+      }
+      a1=as.numeric(input$MultPLXA)
+      ap=as.numeric(input$MultPLXD)
+      DF=hot_to_r(input$hotPmean)
+      if(nrow(DF)!=n){
+        DF=data.frame(tit=rep(0,n))
+      } 
+      colnames(DF)=tit
+    }
+      
+    
+    rhandsontable(DF)
+    
+  })
+  
+  output$hotPvarLP=renderRHandsontable({
+    
+    if(is.null(input$hotPvarLP) ){
+      p=as.numeric(input$MultPLy)
+      tit="mean"
+      if(is.na(p)){
+        p=3
+        tit="Check number of alternatives"
+      }
+      a1=as.numeric(input$MultPLXA)
+      ap=as.numeric(input$MultPLXD)
+      n=a1+ap*(p-1)
+      DF=data.frame(diag(n))
+      colnames(DF)=1:n
+      
+    }else{
+      p=as.numeric(input$MultPLy)
+      tit="mean"
+      if(is.na(p)){
+        p=3
+        tit="Check number of alternatives"
+      }
+      a1=as.numeric(input$MultPLXA)
+      ap=as.numeric(input$MultPLXD)
+      DF=hot_to_r(input$hotPvarLP)
+      if(nrow(DF)!=n){
+        DF=data.frame(diag(n))
+      } 
+      colnames(DF)=1:n
+    }
+    
+    
+    DF=sim(DF)
+    x=as.matrix(DF)
+    bool=is.positive.semi.definite(x, tol=1e-8)
+    if(bool){
+      rv$warningSDP=""
+      rhandsontable(DF)%>%
+        hot_cols(renderer = "
+                 function (instance, td, row, col, prop, value, cellProperties) {
+                 Handsontable.renderers.TextRenderer.apply(this, arguments);
+                 if (col < row) {
+                 td.style.background = 'black';
+                 } 
+                 }")
+    }else{
+      showNotification("Watch out! the red covariance matrix is not positive semi definite")
+      rhandsontable(DF)%>%
+        hot_cols(renderer = "
+                 function (instance, td, row, col, prop, value, cellProperties) {
+                 Handsontable.renderers.TextRenderer.apply(this, arguments);
+                 
+                 td.style.background = 'red';
+                 
+                 }")
+      
+    }
+    
+  })
+  
+  
+  output$hotPvarLP2=renderRHandsontable({
+    
+    if(is.null(input$hotPmean) ){
+      p=as.numeric(input$MultPLy)-1
+      tit="mean"
+      if(is.na(p)){
+        p=3
+        tit="Check number of alternatives"
+      }
+      a1=as.numeric(input$MultPLXA)
+      ap=as.numeric(input$MultPLXD)
+      n=a1+ap*(p-1)
+      DF=data.frame(diag(p))
+      colnames(DF)=1:p
+      
+    }else{
+      p=as.numeric(input$MultPLy)-1
+      tit="mean"
+      if(is.na(p)){
+        p=3
+        tit="Check number of alternatives"
+      }
+      a1=as.numeric(input$MultPLXA)
+      ap=as.numeric(input$MultPLXD)
+      DF=hot_to_r(input$hotPmean)
+      if(nrow(DF)!=p){
+        DF=data.frame(diag(p))
+      } 
+      colnames(DF)=1:p
+    }
+    
+    
+    DF=sim(DF)
+    x=as.matrix(DF)
+    bool=is.positive.semi.definite(x, tol=1e-8)
+    if(bool){
+      rv$warningSDP=""
+      rhandsontable(DF)%>%
+        hot_cols(renderer = "
+                 function (instance, td, row, col, prop, value, cellProperties) {
+                 Handsontable.renderers.TextRenderer.apply(this, arguments);
+                 if (col < row) {
+                 td.style.background = 'black';
+                 } 
+                 }")
+    }else{
+      showNotification("Watch out! the red covariance matrix is not positive semi definite")
+      rhandsontable(DF)%>%
+        hot_cols(renderer = "
+                 function (instance, td, row, col, prop, value, cellProperties) {
+                 Handsontable.renderers.TextRenderer.apply(this, arguments);
+                 
+                 td.style.background = 'red';
+                 
+                 }")
+      
+    }
+    
+  })
+  
+  ######## 1.1 Models: Posterior Chains#########
+  Posteriors11 <- eventReactive(input$goButton11, {
+
+    
+    
+    if(input$M11=='m111' | input$M11=='m113' | input$M11=='m117'){
+      
+      # if(input$PMeanL==""){Bmean<-NULL}
+      # else{
+        # tas<- sub("[c]",",",c(1,1))
+        # tas1<- sub("[(]",",",tas)
+        # tas2<- sub("[)]",",",tas1)
+        # s3<- strsplit(tas2,",")
+        # s4<- c(sapply(s3, as.numeric))
+        # Bmean<- s4[!is.na(s4)]
+      # }
+      Bmean<- hot_to_r(input$hotPmean)[,1]
+      
+      Bvar<- solve(as.matrix(hot_to_r(input$hotPvar)))
+      
+      # if(input$PVarL==""){Bvar<-NULL}
+      # else{
+        # tas3<- sub("[c]",",",c(1,0,0,1))
+        # tas4<- sub("[(]",",",tas3)
+        # tas5<- sub("[)]",",",tas4)
+        # s5<- strsplit(tas5,",")
+        # s6<- c(sapply(s5, as.numeric))
+        # s6<- s6[!is.na(s6)]
+        # n1<- 2
+        # Bvar<- solve(matrix(s6,byrow=TRUE,n1,n1))
+      # }
+      
+      if(input$PShL==""){a<-NULL}
+      else{
+        a<- isolate(as.numeric(input$PShL))
+      }
+      
+      if(input$PScL==""){b<-NULL}
+      else{
+        b<- isolate(as.numeric(input$PScL))
+      }
+    }
+    
+    if(input$M11=='m112'){
+      
+      # if(input$PMeanL==""){Bmean<-0}
+      # else{
+      #   tas<- sub("[c]",",",isolate(input$PMeanL))
+      #   tas1<- sub("[(]",",",tas)
+      #   tas2<- sub("[)]",",",tas1)
+      #   s3<- strsplit(tas2,",")
+      #   s4<- c(sapply(s3, as.numeric))
+      #   Bmean<- s4[!is.na(s4)]
+      # }
+      # 
+      # if(input$PVarL==""){Bvar<-0}
+      # else{
+      #   tas3<- sub("[c]",",",isolate(input$PVarL))
+      #   tas4<- sub("[(]",",",tas3)
+      #   tas5<- sub("[)]",",",tas4)
+      #   s5<- strsplit(tas5,",")
+      #   s6<- c(sapply(s5, as.numeric))
+      #   s6<- s6[!is.na(s6)]
+      #   n1<- ncol(sumtextM1a()$X) 
+      #   Bvar<- solve(matrix(s6,byrow=TRUE,n1,n1))
+      # }  
+      Bmean<- hot_to_r(input$hotPmean)[,1]
+      Bvar<- solve(as.matrix(hot_to_r(input$hotPvar)))
+    }
+    
+    
+    
+    if(input$M11=='m114'){
+      nn<- isolate(as.numeric(input$MultPLnn))
+      pMP<- isolate(as.numeric(input$MultPLy))
+      naMP<- isolate(as.numeric(input$MultPLXA))
+      ndMP<- isolate(as.numeric(input$MultPLXD))
+      XMP<- as.matrix(sumtextM1b()$X[,-1])
+      if(naMP==0){Xa=NULL} else {Xa=as.matrix(XMP[,1:(pMP*naMP)])}
+      if(ndMP==0){Xd=NULL} else {Xd=as.matrix(XMP[,(pMP*naMP+1):ncol(XMP)])}
+      XMPP<- Xcreate(pMP, naMP, ndMP, Xa=Xa, Xd=Xd, INT = TRUE, DIFF = TRUE, base = nn)
+      
+      # if(input$PMeanLMP==""){BmeanyMP<-NULL}
+      # else{
+      #   tasyMP<- sub("[c]",",",isolate(input$PMeanLMP))
+      #   tas1yMP<- sub("[(]",",",tasyMP)
+      #   tas2yMP<- sub("[)]",",",tas1yMP)
+      #   s3yMP<- strsplit(tas2yMP,",")
+      #   s4yMP<- c(sapply(s3yMP, as.numeric))
+      #   BmeanyMP<- s4yMP[!is.na(s4yMP)]
+      # }
+      BmeanyMP<- hot_to_r(input$hotPmeanLP)[,1]
+      # if(input$PVarLMP==""){BvaryMP<-NULL}
+      # else{
+      #   tas3yMP<- sub("[c]",",",isolate(input$PVarLMP))
+      #   tas4yMP<- sub("[(]",",",tas3yMP)
+      #   tas5yMP<- sub("[)]",",",tas4yMP)
+      #   s5yMP<- strsplit(tas5yMP,",")
+      #   s6yMP<- c(sapply(s5yMP, as.numeric))
+      #   s6yMP<- s6yMP[!is.na(s6yMP)]
+      #   n1yMP<- naMP+(ndMP+1)*(pMP-1) 
+      #   BvaryMP<- solve(matrix(s6yMP,byrow=TRUE,n1yMP,n1yMP))
+      # }
+      BmeanyMP<- hot_to_r(input$hotPmeanLP)[,1]
+      BvaryMP<-solve(as.matrix(hot_to_r(input$hotPvarLP)))
+      
+      # if(input$PVarLIWMP==""){VMP<-NULL}
+      # else{
+      #   tas3iwMP<- sub("[c]",",",isolate(input$PVarLIWMP))
+      #   tas4iwMP<- sub("[(]",",",tas3iwMP)
+      #   tas5iwMP<- sub("[)]",",",tas4iwMP)
+      #   s5iwMP<- strsplit(tas5iwMP,",")
+      #   s6iwMP<- c(sapply(s5iwMP, as.numeric))
+      #   s6iwMP<- s6iwMP[!is.na(s6iwMP)]
+      #   VMP<- matrix(s6iwMP,byrow=TRUE,pMP-1,pMP-1)
+      # }
+      
+      VMP<-solve(as.matrix(hot_to_r(input$hotPvarLP)))
+      
+      if(input$PShLIWMP==""){nuMP<-NULL}
+      else{
+        nuMP<- isolate(as.numeric(input$PShLIWMP))
+      }
+    }
+    
+    if(input$M11=='m115'){
+      nn<- isolate(as.numeric(input$MultPLnn))
+      pMP<- isolate(as.numeric(input$MultPLy))
+      naMP<- isolate(as.numeric(input$MultPLXA))
+      ndMP<- isolate(as.numeric(input$MultPLXD))
+      XMP<- as.matrix(sumtextM1b()$X[,-1])
+      if(naMP==0){Xa=NULL} else {Xa=as.matrix(XMP[,1:(pMP*naMP)])}
+      if(ndMP==0){Xd=NULL} else {Xd=as.matrix(XMP[,(pMP*naMP+1):ncol(XMP)])}
+      XMPP<- Xcreate(pMP, naMP, ndMP, Xa=Xa, Xd=Xd, INT = TRUE, DIFF = FALSE, base = nn)
+      
+      # if(input$PMeanLMP==""){BmeanyMP<-NULL}
+      # else{
+      #   tasyMP<- sub("[c]",",",isolate(input$PMeanLMP))
+      #   tas1yMP<- sub("[(]",",",tasyMP)
+      #   tas2yMP<- sub("[)]",",",tas1yMP)
+      #   s3yMP<- strsplit(tas2yMP,",")
+      #   s4yMP<- c(sapply(s3yMP, as.numeric))
+      #   BmeanyMP<- s4yMP[!is.na(s4yMP)]
+      # }
+      # 
+      # if(input$PVarLMP==""){BvaryMP<-NULL}
+      # else{
+      #   tas3yMP<- sub("[c]",",",isolate(input$PVarLMP))
+      #   tas4yMP<- sub("[(]",",",tas3yMP)
+      #   tas5yMP<- sub("[)]",",",tas4yMP)
+      #   s5yMP<- strsplit(tas5yMP,",")
+      #   s6yMP<- c(sapply(s5yMP, as.numeric))
+      #   s6yMP<- s6yMP[!is.na(s6yMP)]
+      #   n1yMP<- naMP+(ndMP+1)*(pMP-1) 
+      #   BvaryMP<- solve(matrix(s6yMP,byrow=TRUE,n1yMP,n1yMP))
+      # }
+      BmeanyMP<- hot_to_r(input$hotPmeanLP)[,1]
+      BvaryMP<-solve(as.matrix(hot_to_r(input$hotPvarLP)))
+      
+    }
+    
+    if(input$M11=='m116'){
+      
+      # if(input$PMeanL==""){Bmean<-NULL}
+      # else{
+      #   tas<- sub("[c]",",",isolate(input$PMeanL))
+      #   tas1<- sub("[(]",",",tas)
+      #   tas2<- sub("[)]",",",tas1)
+      #   s3<- strsplit(tas2,",")
+      #   s4<- c(sapply(s3, as.numeric))
+      #   Bmean<- s4[!is.na(s4)]
+      # }
+      # 
+      # if(input$PVarL==""){Bvar<-NULL}
+      # else{
+      #   tas3<- sub("[c]",",",isolate(input$PVarL))
+      #   tas4<- sub("[(]",",",tas3)
+      #   tas5<- sub("[)]",",",tas4)
+      #   s5<- strsplit(tas5,",")
+      #   s6<- c(sapply(s5, as.numeric))
+      #   s6<- s6[!is.na(s6)]
+      #   n1<- ncol(sumtextM1a()$X) 
+      #   Bvar<- solve(matrix(s6,byrow=TRUE,n1,n1))
+      # }
+      
+      Bmean<- hot_to_r(input$hotPmean)[,1]
+      Bvar<- solve(as.matrix(hot_to_r(input$hotPvar)))
+      Bmeancut=NULL
+      Bvarcut=NULL
+      if(input$m116numAlt>2){
+        Bmeancut=hot_to_r(input$hotCmean)[,1]
+        Bvarcut=solve(as.matrix(hot_to_r(input$hotCvar)))
+      }
+      
+      # if(input$PMeanLcut==""){Bmeancut<-NULL}
+      # else{
+      #   tas6<- sub("[c]",",",isolate(input$PMeanLcut))
+      #   tas7<- sub("[(]",",",tas6)
+      #   tas8<- sub("[)]",",",tas7)
+      #   s7<-strsplit(tas8,",")
+      #   s8<-c(sapply(s7, as.numeric))
+      #   Bmeancut<-s8[!is.na(s8)]
+      # }
+      # 
+      # if(input$PVarLcut==""){Bvarcut<-NULL}
+      # else{
+      #   tas9<- sub("[c]",",",isolate(input$PVarLcut))
+      #   tas10<- sub("[(]",",",tas9)
+      #   tas11<- sub("[)]",",",tas10)
+      #   s9<-strsplit(tas11,",")
+      #   s10<-c(sapply(s9, as.numeric))
+      #   s10<-s10[!is.na(s10)]
+      #   n2<-max(sumtextM1a()$y)-2
+      #   Bvarcut<- solve(matrix(s10,byrow=TRUE,n2,n2))
+      # }
+    }
+    
+    if(input$M11=='m118'){
+      
+      # if(input$PMeanL==""){Bmean<-0}
+      # else{
+      #   tas<- sub("[c]",",",isolate(input$PMeanL))
+      #   tas1<- sub("[(]",",",tas)
+      #   tas2<- sub("[)]",",",tas1)
+      #   s3<- strsplit(tas2,",")
+      #   s4<- c(sapply(s3, as.numeric))
+      #   Bmean<- s4[!is.na(s4)]
+      # }
+      # 
+      # if(input$PVarL==""){Bvar<-0}
+      # else{
+      #   tas3<- sub("[c]",",",isolate(input$PVarL))
+      #   tas4<- sub("[(]",",",tas3)
+      #   tas5<- sub("[)]",",",tas4)
+      #   s5<- strsplit(tas5,",")
+      #   s6<- c(sapply(s5, as.numeric))
+      #   s6<- s6[!is.na(s6)]
+      #   n1<- ncol(sumtextM1a()$X) 
+      #   Bvar<- solve(matrix(s6,byrow=TRUE,n1,n1))
+      # }
+      
+      Bmean<- hot_to_r(input$hotPmean)[,1]
+      Bvar<- solve(as.matrix(hot_to_r(input$hotPvar)))
+      
+      if(input$PShL==""){a<-0.001}
+      else{
+        a<- isolate(as.numeric(input$PShL))
+      }
+      
+      if(input$PScL==""){b<-0.001}
+      else{
+        b<- isolate(as.numeric(input$PScL))
+      }
+      
+      if(input$Below11==""){Be<-0}
+      else{
+        Be<- isolate(as.numeric(input$Below11))
+      }
+      
+      if(input$Above11==""){Ab<-Inf}
+      else{
+        Ab<- isolate(as.numeric(input$Above11))
+      }
+    }
+    if(input$M11=='m119'){
+      
+      # if(input$PMeanL==""){Bmean<-0}
+      # else{
+      #   tas<- sub("[c]",",",isolate(input$PMeanL))
+      #   tas1<- sub("[(]",",",tas)
+      #   tas2<- sub("[)]",",",tas1)
+      #   s3<- strsplit(tas2,",")
+      #   s4<- c(sapply(s3, as.numeric))
+      #   Bmean<- s4[!is.na(s4)]
+      # }
+      # 
+      # if(input$PVarL==""){Bvar<-0}
+      # else{
+      #   tas3<- sub("[c]",",",isolate(input$PVarL))
+      #   tas4<- sub("[(]",",",tas3)
+      #   tas5<- sub("[)]",",",tas4)
+      #   s5<- strsplit(tas5,",")
+      #   s6<- c(sapply(s5, as.numeric))
+      #   s6<- s6[!is.na(s6)]
+      #   n1<- ncol(sumtextM1a()$X) 
+      #   Bvar<- solve(matrix(s6,byrow=TRUE,n1,n1))
+      # }
+      
+      Bmean<- hot_to_r(input$hotPmean)[,1]
+      Bvar<- solve(as.matrix(hot_to_r(input$hotPvar)))
+      
+      if(input$tau11==""){t<-0.5}
+      else{
+        t<- isolate(as.numeric(input$tau11))
+      }
+    }
+    
+    MCMC<- list(R=input$it,keep=as.numeric(input$keep),burnin=input$burnin)
+    MCMCML<- list(R=input$it,keep=as.numeric(input$keep),burnin=input$burnin,nu=as.numeric(input$nu))
+    if(input$M11=='m110')
+      return()
+    else {
+      args <- switch(input$M11,
+                     "m111" = list(sumtextM1a(),list(betabar=Bmean,A=Bvar,a=a,b=b),MCMC),
+                     "m112" = list(form=input$Formula1a, data=dataInput1(), burnin = input$burnin, mcmc = input$it, thin=as.numeric(input$keep), tune=1.1, verbose = 0, seed = NA, beta.start = NA, b0 = Bmean, B0 = Bvar),
+                     "m113" = list(sumtextM1a(),list(betabar=Bmean,A=Bvar),MCMC),
+                     "m114" = list(list(p=pMP,y=sumtextM1b()$y,X=XMPP),list(betabar=BmeanyMP,A=BvaryMP,nu=nuMP,V=VMP),MCMC),
+                     "m115" = list(list(p=pMP,y=sumtextM1b()$y,X=XMPP),list(betabar=BmeanyMP,A=BvaryMP),MCMCML),
+                     "m116" = list(sumtextM1a(),list(betabar=Bmean,A=Bvar,dstarbar=Bmeancut,Ad=Bvarcut),MCMC),
+                     "m117" = list(sumtextM1a(),list(betabar=Bmean,A=Bvar,a=a,b=b),MCMC),
+                     "m118" = list(form=input$Formula1a, data=dataInput1(), below = Be, above = Ab, burnin = input$burnin, mcmc = input$it, thin=as.numeric(input$keep), verbose = 0, seed = NA, beta.start = NA, b0 = Bmean, B0 = Bvar, c0 = a, d0 = b),
+                     "m119" = list(form=input$Formula1a, data=dataInput1(), tau = t, burnin = input$burnin, mcmc = input$it, thin=as.numeric(input$keep), verbose = 0, seed = NA, beta.start = NA, b0 = Bmean, B0 = Bvar)
+      )}
+    
+    if (input$M11 == 'm111') {
+      do.call(Normal, args)}
+    else {
+      if (input$M11 == 'm112') {
+        do.call(MCMClogit, args)}
+      else {
+        if (input$M11 == 'm113') {
+          do.call(Probit, args)}
+        else {
+          if (input$M11 == 'm114') {
+            do.call(MultinomialProbit, args)}
+          else {
+            if (input$M11 == 'm115') {
+              do.call(MultinomialLogit, args)}
+            else {
+              if (input$M11 == 'm116') {
+                do.call(Oprobit, args)}
+              else {
+                if (input$M11 == 'm117') {
+                  do.call(NegBin, args)}
+                else {
+                  if (input$M11 == 'm118'){
+                    do.call(MCMCtobit, args)}
+                  else {
+                    if (input$M11 == 'm119'){
+                      do.call(MCMCquantreg, args)}
+                  }
+                }
+              }                
+            }
+          }
+        }
+      }
+    }
+  })
+  
+  ####### 1.1 Models: Download Posterior Chains##########
+  
+  output$download11 <- downloadHandler(
+    filename = function() { 
+      paste("Posterior Chains", '.csv', sep='') 
+    },
+    
+    content = function(file) {
+      
+      if(input$M11=='m110')
+        content<- return()
+      
+      switch(input$M11,
+             "m111" = post11<- cbind(Posteriors11()$betadraw,Posteriors11()$sigmasqdraw),
+             "m112" = post11<- cbind(Posteriors11()),
+             "m113" = post11<- cbind(Posteriors11()$betadraw),
+             "m114" = post11<- cbind(Posteriors11()$betadraw,Posteriors11()$sigmadraw),
+             "m115" = post11<- cbind(Posteriors11()$betadraw),
+             "m116" = post11<- cbind(Posteriors11()$betadraw,Posteriors11()$cutdraw),
+             "m117" = post11<- cbind(Posteriors11()$betadraw,Posteriors11()$alphadraw),
+             "m118" = post11<- cbind(Posteriors11()),
+             "m119" = post11<- cbind(Posteriors11()))      
+      write.csv(post11, file)
+    }
+  )
+
+  ####### 1.1 Models: Summary Posterior Chains##########
+  
+  output$summary11 <- renderPrint({
+    if(input$M11=='m110'){
+      return()}   
+    else{
+      switch(input$M11,
+             "m111" = SumDiagNormal(Posteriors11()$betadraw[,],Posteriors11()$sigmasqdraw[]),
+             "m112" = SumDiagLogit(Posteriors11()),
+             "m113" = SumDiagProbit(Posteriors11()$betadraw[,]),
+             "m114" = SumDiagMultProbit(Posteriors11()$betadraw[,],Posteriors11()$sigmadraw[,]),
+             "m115" = SumDiagMultLogit(Posteriors11()$betadraw[,]),
+             "m116" = SumDiagOprobit(Posteriors11()$betadraw[,],Posteriors11()$cutdraw[,]),
+             "m117" = SumDiagNegBin(Posteriors11()$betadraw[,],Posteriors11()$alphadraw[]),
+             "m118" = SumDiagTobit(Posteriors11()),
+             "m119" = SumDiagQuantile(Posteriors11()))
+    }
+  })
+  
+  ####### 1.1 Models: Graphs Posterior Chains##########  
+  output$plot11 <- renderPlot({
+    unlink(file.path(path,"Posterior Graphs"),recursive=TRUE)
+    dir.create(file.path(path,"Posterior Graphs"),showWarnings = FALSE)
+    setwd(file.path(path,"Posterior Graphs"))
+    
+    graphs11<- function(post11){
+      nc<-ncol(post11)
+      for (i in 1:nc) {
+        pdf(paste("Density Plot",paste(i,".pdf", sep = "", collapse = NULL)))
+        Plot(post11[,i])
+        dev.off()
+        setEPS()
+        postscript(paste("Density Plot",paste(i,".eps", sep = "", collapse = NULL)))
+        Plot(post11[,i])
+        dev.off()
+        pdf(paste("Trace Plot",paste(i,".pdf", sep = "", collapse = NULL)))
+        Plot.trace(post11[,i])
+        dev.off()
+        setEPS()
+        postscript(paste("Trace Plot",paste(i,".eps", sep = "", collapse = NULL)))
+        Plot.trace(post11[,i])
+        dev.off()
+        pdf(paste("Autocorrelation Plot",paste(i,".pdf", sep = "", collapse = NULL)))
+        Plot.corr(post11[,i])
+        dev.off()
+        setEPS()
+        postscript(paste("Autocorrelation Plot",paste(i,".eps", sep = "", collapse = NULL)))
+        Plot.corr(post11[,i])
+        dev.off()
+      }
+    }
+    switch(input$M11,
+           "m111" = graphs11(cbind(Posteriors11()$betadraw[,],Posteriors11()$sigmasqdraw[])),
+           "m112" = graphs11(Posteriors11()),
+           "m113" = graphs11(Posteriors11()$betadraw[,]),
+           "m114" = graphs11(cbind(Posteriors11()$betadraw[,],Posteriors11()$sigmadraw[,])),
+           "m115" = graphs11(Posteriors11()$betadraw[,]),
+           "m116" = graphs11(cbind(Posteriors11()$betadraw[,],Posteriors11()$cutdraw[,])),
+           "m117" = graphs11(cbind(Posteriors11()$betadraw[,],Posteriors11()$alphadraw[])),
+           "m118" = graphs11(Posteriors11()),
+           "m119" = graphs11(Posteriors11()))
+    setwd("..")
+  })
+  output$multiDownload11 <- downloadHandler(
+    filename = function() {
+      paste("Posterior Graphs", "zip", sep=".")
+    },
+    
+    content = function(file) {
+      zip(zipfile=file, files='Posterior Graphs')
+    },
+    contentType = "application/zip"
+  )
+
+#})
