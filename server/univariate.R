@@ -1,4 +1,4 @@
-getRegs=function(f){
+getRegs=function(f){ #function that get the variables given a formula
   if(f==""){
     return("null")
   }
