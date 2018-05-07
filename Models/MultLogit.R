@@ -120,6 +120,9 @@ MultinomialLogit<-function (Data, Prior, Mcmc)
   oldlpost = oldloglike + lndMvn(beta, betabar, rootpi)
   oldlimp = lndMvst(beta, nu, betastar, rooti)
   naccept = 0
+  
+  ## ITER
+  withProgress(message = 'Making calculations', value = 0, {
   for (rep in 1:Rnew) {
     betac = rmvst(nu, betastar, root)
     cloglike = llmnl(betac, y, X)
@@ -152,7 +155,9 @@ MultinomialLogit<-function (Data, Prior, Mcmc)
       betadraw[mkeep, ] = beta
       loglike[mkeep] = oldloglike
     }
+    incProgress(1/rep, detail = paste('Doing iteration', rep))
   }
+  })
 #   ctime = proc.time()[3]
 #   cat("  Total Time Elapsed: ", round((ctime - itime)/60, 2), 
 #       "\n")

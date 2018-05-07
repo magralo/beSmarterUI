@@ -157,6 +157,8 @@ MultinomialProbit<- function (Data, Prior, Mcmc)
   }
 #   itime = proc.time()[3]
 #   cat("MCMC Iteration (est time to end - min) ", fill = TRUE)
+  ## ITER
+  withProgress(message = 'Making calculations', value = 0, {
   for (rep in 1:Rnew) {
     sigmai = crossprod(C)
     wnew = draww(wold, X, y, betaold, sigmai)
@@ -183,7 +185,9 @@ MultinomialProbit<- function (Data, Prior, Mcmc)
     }
     wold = wnew
     betaold = betanew
+    incProgress(1/rep, detail = paste('Doing iteration', rep))
   }
+  })
 #   ctime = proc.time()[3]
 #   cat("  Total Time Elapsed: ", round((ctime - itime)/60, 2), 
 #       "\n")
