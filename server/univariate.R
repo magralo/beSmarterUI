@@ -426,7 +426,7 @@ sim=function(DF){
         tit="Check number of alternatives"
       }
       a1=as.numeric(input$MultPLXA)
-      ap=as.numeric(input$MultPLXD)
+      ap=as.numeric(input$MultPLXD)+1
       n=a1+ap*(p-1)
       DF=data.frame(tit=rep(0,n))
       colnames(DF)=tit
@@ -439,7 +439,8 @@ sim=function(DF){
         tit="Check number of alternatives"
       }
       a1=as.numeric(input$MultPLXA)
-      ap=as.numeric(input$MultPLXD)
+      ap=as.numeric(input$MultPLXD)+1
+      n=a1+ap*(p-1)
       DF=hot_to_r(input$hotPmean)
       if(nrow(DF)!=n){
         DF=data.frame(tit=rep(0,n))
@@ -462,7 +463,7 @@ sim=function(DF){
         tit="Check number of alternatives"
       }
       a1=as.numeric(input$MultPLXA)
-      ap=as.numeric(input$MultPLXD)
+      ap=as.numeric(input$MultPLXD)+1
       n=a1+ap*(p-1)
       DF=data.frame(diag(n))
       colnames(DF)=1:n
@@ -475,7 +476,8 @@ sim=function(DF){
         tit="Check number of alternatives"
       }
       a1=as.numeric(input$MultPLXA)
-      ap=as.numeric(input$MultPLXD)
+      ap=as.numeric(input$MultPLXD)+1
+      n=a1+ap*(p-1)
       DF=hot_to_r(input$hotPvarLP)
       if(nrow(DF)!=n){
         DF=data.frame(diag(n))
@@ -614,11 +616,11 @@ sim=function(DF){
       if(ndMP==0){Xd=NULL} else {Xd=as.matrix(XMP[,(pMP*naMP+1):ncol(XMP)])}
       XMPP<- Xcreate(pMP, naMP, ndMP, Xa=Xa, Xd=Xd, INT = TRUE, DIFF = TRUE, base = nn)
 
-      BmeanyMP<- hot_to_r(input$hotPmeanLP)[,1]
-      BvaryMP<-solve(as.matrix(hot_to_r(input$hotPvarLP)))
+      BmeanyMP<- hot_to_r(input$hotPmeanLP)[,1]#vector for mulltinomial mixed
+      BvaryMP<-solve(as.matrix(hot_to_r(input$hotPvarLP)))#matrix for multinomial mixed
       
 
-      VMP<-solve(as.matrix(hot_to_r(input$hotPvarLP)))
+      VMP<-solve(as.matrix(hot_to_r(input$hotPvarLP2)))#big Q, is it the inverse?
       
       if(input$PShLIWMP==""){nuMP<-NULL}
       else{
@@ -636,8 +638,8 @@ sim=function(DF){
       if(ndMP==0){Xd=NULL} else {Xd=as.matrix(XMP[,(pMP*naMP+1):ncol(XMP)])}
       XMPP<- Xcreate(pMP, naMP, ndMP, Xa=Xa, Xd=Xd, INT = TRUE, DIFF = FALSE, base = nn)
 
-      BmeanyMP<- hot_to_r(input$hotPmeanLP)[,1]
-      BvaryMP<-solve(as.matrix(hot_to_r(input$hotPvarLP)))
+      BmeanyMP<- hot_to_r(input$hotPmeanLP)[,1]#vector for mulltinomial mixed
+      BvaryMP<-solve(as.matrix(hot_to_r(input$hotPvarLP)))#matrix for multinomial mixed
       
     }
     

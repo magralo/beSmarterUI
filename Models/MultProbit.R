@@ -78,7 +78,7 @@ MultinomialProbit<- function (Data, Prior, Mcmc)
   if (nu < 1) 
     pandterm("invalid nu value")
   if (sum(dim(V) == c(pm1, pm1)) != 2) 
-    pandterm("V is of incorrect dimension")
+    pandterm(paste("V is of incorrect dimension",pm1))
   if (missing(Mcmc)) 
     pandterm("Requires Mcmc argument -- at least R must be included")
   if (is.null(Mcmc$R)) {
