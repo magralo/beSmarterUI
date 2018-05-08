@@ -620,7 +620,7 @@ sim=function(DF){
       BvaryMP<-solve(as.matrix(hot_to_r(input$hotPvarLP)))#matrix for multinomial mixed
       
 
-      VMP<-solve(as.matrix(hot_to_r(input$hotPvarLP2)))#big Q, is it the inverse?
+      VMP<-as.matrix(hot_to_r(input$hotPvarLP2))#big Q, is it the inverse?
       
       if(input$PShLIWMP==""){nuMP<-NULL}
       else{

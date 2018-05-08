@@ -147,14 +147,17 @@ MultinomialProbit<- function (Data, Prior, Mcmc)
   wold = c(rep(0, nrow(X)))
   betaold = beta0
   C = chol(solve(sigma0))
-  drawwc = function(w, mu, y, sigi) {
-    .C("draww", w = as.double(w), as.double(mu), as.double(sigi), 
-       as.integer(length(y)), as.integer(ncol(sigi)), as.integer(y))$w
-  }
   draww = function(w, X, y, beta, sigmai) {
     Xbeta = as.vector(X %*% beta)
     drawwc(w, Xbeta, y, sigmai)
   }
+  drawwc = function(w, mu, y, sigi) {
+    .C("draww", w = as.double(w), as.double(mu), as.double(sigi), 
+       as.integer(length(y)), as.integer(ncol(sigi)), as.integer(y))$w
+  }
+  
+ 
+  
 #   itime = proc.time()[3]
 #   cat("MCMC Iteration (est time to end - min) ", fill = TRUE)
   ## ITER
