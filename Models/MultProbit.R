@@ -147,6 +147,7 @@ MultinomialProbit<- function (Data, Prior, Mcmc)
   wold = c(rep(0, nrow(X)))
   betaold = beta0
   C = chol(solve(sigma0))
+  Rcpp::sourceCpp("Models/draww.cpp")
   draww = function(w, X, y, beta, sigmai) {
     Xbeta = as.vector(X %*% beta)
     drawwc(w, Xbeta, y, sigmai)
@@ -203,26 +204,4 @@ MultinomialProbit<- function (Data, Prior, Mcmc)
 }
 
 
-# setwd("C:/andres_ramirez/Andres_EAFIT/Bayesian Econometrics/UserInterface/BEsmartV21/Data")
-# Data1<- read.table(file="SimMultProbitmodel.csv",header=TRUE,sep=",")
-# Xa<-as.matrix(Data1[,2:7])
-# Xd<-as.matrix(Data1[,8])
-# XMPP<- createX(3, 2, 1, Xa=Xa, Xd=Xd, INT = TRUE, DIFF = TRUE, base = 3)
-# #simout=simmnp(X,p,500,beta,Sigma)
-# Data1=list(p=3,y=Data1[,1],X=XMPP)
-# Mcmc1=list(R=1000,keep=1)
-# out=MultinomialProbit(Data=Data1,Mcmc=Mcmc1)
-# # 
-# # cat(" Summary of Betadraws ",fill=TRUE)
-# # betatilde=out$betadraw/sqrt(out$sigmadraw[,1])
-# # summary(betatilde)
-# # attributes(betatilde)$class="bayesm.mat"
-# # summary(betatilde,tvalues=beta)
-#   summary(out$betadraw)
-#   summary(out$sigmadraw)
-# # cat(" Summary of Sigmadraws ",fill=TRUE)
-# # sigmadraw=out$sigmadraw/out$sigmadraw[,1]
-# # attributes(sigmadraw)$class="bayesm.var"
-# # summary(sigmadraw,tvalues=as.vector(Sigma[upper.tri(Sigma,diag=TRUE)]))
-# # summary(out$sigmadraw)
 

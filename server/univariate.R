@@ -99,7 +99,8 @@ sim=function(DF){
                                         helpText("Introduce prior mean vector location parameters"),
                                         rHandsontableOutput("hotPmean"),
                                         helpText("Introduce prior covariances location parameters by row. It has to be symmetric"),
-                                        rHandsontableOutput("hotPvar")
+                                        rHandsontableOutput("hotPvar"),
+                                        LogitTune
                                         )),
              "m113" = isolate(wellPanel(fluidRow(column(3,FormulaM1A),column(9,HTForm)),
                                         helpText("Introduce prior mean vector location parameters"),
@@ -154,7 +155,8 @@ sim=function(DF){
                                         helpText("Introduce prior covariances location parameters by row. It has to be symmetric"),
                                         rHandsontableOutput("hotPvar"), 
                                         fluidRow(column(3,Psh1),column(3,Psc1)),
-                                        fluidRow(column(3,HTsh),column(3,HTsc)))),
+                                        fluidRow(column(3,HTsh),column(3,HTsc)),
+                                        fluidRow(column(3,NegBinAlpha),column(3,NegBinBeta)) )),
              "m118" =isolate(wellPanel(fluidRow(column(3,FormulaM1A),column(9,HTForm)),
                                        fluidRow(column(3,Below),column(3,HTBelow),column(3,Above),column(3,HTAbove)),
                                        helpText("Introduce prior mean vector location parameters"),
@@ -595,6 +597,8 @@ sim=function(DF){
       else{
         b<- isolate(as.numeric(input$PScL))
       }
+      
+      
     }
     
     if(input$M11=='m112'){
@@ -602,6 +606,7 @@ sim=function(DF){
 
       Bmean<- hot_to_r(input$hotPmean)[,1]
       Bvar<- solve(as.matrix(hot_to_r(input$hotPvar)))
+      
     }
     
     
@@ -699,13 +704,17 @@ sim=function(DF){
     }
     
     MCMC<- list(R=input$it,keep=as.numeric(input$keep),burnin=input$burnin)
+    if(input$M11=='m117'){
+      MCMC$s_alpha=input$NegBinAlpha
+      MCMC$s_beta=input$NegBinBeta
+    }
     MCMCML<- list(R=input$it,keep=as.numeric(input$keep),burnin=input$burnin,nu=as.numeric(input$nu))
     if(input$M11=='m110')
       return()
     else {
       args <- switch(input$M11,
                      "m111" = list(sumtextM1a(),list(betabar=Bmean,A=Bvar,a=a,b=b),MCMC),
-                     "m112" = list(form=input$Formula1a, data=dataInput1(), burnin = input$burnin, mcmc = input$it, thin=as.numeric(input$keep), tune=1.1, verbose = 0, seed = NA, beta.start = NA, b0 = Bmean, B0 = Bvar),
+                     "m112" = list(form=input$Formula1a, data=dataInput1(), burnin = input$burnin, mcmc = input$it, thin=as.numeric(input$keep), tune=input$LogitTune, verbose = 0, seed = NA, beta.start = NA, b0 = Bmean, B0 = Bvar),
                      "m113" = list(sumtextM1a(),list(betabar=Bmean,A=Bvar),MCMC),
                      "m114" = list(list(p=pMP,y=sumtextM1b()$y,X=XMPP),list(betabar=BmeanyMP,A=BvaryMP,nu=nuMP,V=VMP),MCMC),
                      "m115" = list(list(p=pMP,y=sumtextM1b()$y,X=XMPP),list(betabar=BmeanyMP,A=BvaryMP),MCMCML),
@@ -719,7 +728,7 @@ sim=function(DF){
       do.call(Normal, args)}
     else {
       if (input$M11 == 'm112') {
-        do.call(MCMClogit, args)}
+        do.call(MCMClogit, args)}## CHECK simple
       else {
         if (input$M11 == 'm113') {
           do.call(Probit, args)}
@@ -731,10 +740,10 @@ sim=function(DF){
               do.call(MultinomialLogit, args)}
             else {
               if (input$M11 == 'm116') {
-                do.call(Oprobit, args)}
+                do.call(Oprobit, args)} ### CHECK no idea
               else {
                 if (input$M11 == 'm117') {
-                  do.call(NegBin, args)}
+                  do.call(NegBin, args)} ###CHECK simple (for alpha, no idea for beta)
                 else {
                   if (input$M11 == 'm118'){
                     do.call(MCMCtobit, args)}

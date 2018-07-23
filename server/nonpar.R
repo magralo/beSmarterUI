@@ -24,7 +24,7 @@
     lm.coefs <- function(dat){
       coef(lm(input$Formula42, data = dat))
     }
-    bayesboot(dataInput42(), lm.coefs, R = input$it, use.weights = FALSE)
+    bayesboot(dataInput42(), lm.coefs, R = input$itBB,R2=input$BBr2, use.weights = FALSE)# i changed the source of input for R 
   })
 
   

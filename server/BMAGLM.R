@@ -222,6 +222,8 @@ goBMAN1<- actionButton("goBMAN1", "Go!")
 goBMAN2<- actionButton("goBMAN2", "Go!")
 goBMAN3<- actionButton("goBMAN3", "Go!")
 
+BMA_OR=numericInput('BMA_OR','OR',value = 50,min = 10)
+
 CNBMA=fluidPage( normalT,uploadBMA,normaltcond,br(),br(),summaryBMA)
 
 
@@ -229,15 +231,15 @@ CNBMA=fluidPage( normalT,uploadBMA,normaltcond,br(),br(),summaryBMA)
 #conditional for logit models
 
 goBMAL<- actionButton("goBMAL", "Go!")
-CLBMA=fluidPage(uploadBMA,h6("logit"),goBMAL,br(),br(),summaryBMA)
+CLBMA=fluidPage(uploadBMA,br(),BMA_OR,h6("logit"),goBMAL,br(),br(),summaryBMA)
 
 #conditional for Poisson models
 goBMAP<- actionButton("goBMAP", "Go!")
-CPBMA=fluidPage(uploadBMA,h6("Poisson"),goBMAP,br(),br(),summaryBMA)
+CPBMA=fluidPage(uploadBMA,br(),BMA_OR,h6("Poisson"),goBMAP,br(),br(),summaryBMA)
 
 #conditional for GAMMA models
 goBMAG<- actionButton("goBMAG", "Go!")
-CGBMA=fluidPage(uploadBMA,h6("Gamma"),goBMAG,br(),br(),summaryBMA)
+CGBMA=fluidPage(uploadBMA,br(),BMA_OR,h6("Gamma"),goBMAG,br(),br(),summaryBMA)
 
 DLBIC<- downloadButton('DLBIC', 'Download results using BIC')
 DLMC3<- downloadButton('DLMC3', 'Download results using MC3')
@@ -270,10 +272,11 @@ normalDW<- uiOutput("normalDW")#because inputs may vary according to the selecte
   })
   
   
+  
   output$normaltcond <- renderUI({
     
     switch(input$normalT,
-           "1"=fluidPage(h6("Using BIC approximation"),
+           "1"=fluidPage(br(),BMA_OR,h6("Using BIC approximation"),
                          goBMAN1,
                          br()),
            "2"=fluidPage(h6("Performing MC3"),
@@ -440,7 +443,7 @@ normalDW<- uiOutput("normalDW")#because inputs may vary according to the selecte
       Y=YX[,1]
       X=YX[,-1]
       hasta=dim(X)[2]
-      aux <- bicreg(x=X, y=Y, strict = FALSE, OR = 50,maxCol = (hasta+1))
+      aux <- bicreg(x=X, y=Y, strict = FALSE, OR = input$BMA_OR,maxCol = (hasta+1))
       nv=dim(YX)[]
       rvBMA$obj=aux
       rvBMA$results=as.matrix(summary(aux))
@@ -570,7 +573,7 @@ normalDW<- uiOutput("normalDW")#because inputs may vary according to the selecte
       Y=YX[,1]
       X=YX[,-1]
       hasta=dim(X)[2]
-      aux <- bic.glm(x=X, y=Y, strict = FALSE, OR = 50,maxCol = (hasta+1), glm.family=binomial())
+      aux <- bic.glm(x=X, y=Y, strict = FALSE, OR = input$BMA_OR,maxCol = (hasta+1), glm.family=binomial())
       nv=dim(YX)[]
       rvBMA$obj=aux
       rvBMA$results=as.matrix(summary(aux))
@@ -590,7 +593,7 @@ normalDW<- uiOutput("normalDW")#because inputs may vary according to the selecte
       Y=YX[,1]
       X=YX[,-1]
       hasta=dim(X)[2]
-      aux <- bic.glm(x=X, y=Y, strict = FALSE, OR = 50,maxCol = (hasta+1), glm.family=poisson())
+      aux <- bic.glm(x=X, y=Y, strict = FALSE, OR = input$BMA_OR,maxCol = (hasta+1), glm.family=poisson())
       nv=dim(YX)[]
       rvBMA$obj=aux
       rvBMA$results=as.matrix(summary(aux))
@@ -611,7 +614,7 @@ normalDW<- uiOutput("normalDW")#because inputs may vary according to the selecte
       Y=YX[,1]
       X=YX[,-1]
       hasta=dim(X)[2]
-      aux <- bic.glm(x=X, y=Y, strict = FALSE, OR = 50,maxCol = (hasta+1),  glm.family=Gamma(link="log"))
+      aux <- bic.glm(x=X, y=Y, strict = FALSE, OR = input$BMA_OR,maxCol = (hasta+1),  glm.family=Gamma(link="log"))
       nv=dim(YX)[]
       rvBMA$obj=aux
       rvBMA$results=as.matrix(summary(aux))

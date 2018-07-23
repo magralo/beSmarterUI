@@ -143,6 +143,13 @@ it1BB<- sliderInput("itBB",
                   max = 10000,
                   step = 1000)
 
+BBr2<- sliderInput("BBr2", 
+                    "S_1:", 
+                    value = 1000,
+                    min = 1000, 
+                    max = 10000,
+                    step = 1000)
+
 
 HT<- helpText("Click the button (Go!) after importing the dataset and selecting the model to update the value displayed in the main panel.")
 BE<- helpText("Warning: Be patient this may take several minutes!!!")

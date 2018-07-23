@@ -6,5 +6,5 @@
                         h2("Bayesian Econometrics: simulations, models and applications to research, teaching and encoding with responsibility"),
                         image
                       ),
-                      mainPanel(fluidRow(column(5,file4m),column(2,filech4m),column(2,rb4m)),fluidRow(column(4,it1BB)),go42,fluidRow(column(3,FormulaM42)),DUI42,HT,BE,DL42,DLP42,verbatimTextOutput("summary42"),pplot42)))
+                      mainPanel(fluidRow(column(5,file4m),column(2,filech4m),column(2,rb4m)),fluidRow(column(4,it1BB),column(4,BBr2)),go42,fluidRow(column(3,FormulaM42)),DUI42,HT,BE,DL42,DLP42,verbatimTextOutput("summary42"),pplot42)))
            

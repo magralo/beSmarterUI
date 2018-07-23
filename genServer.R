@@ -99,6 +99,10 @@ library(matrixcalc)
     HTPtst<- helpText("Select degrees of freedom Multivariate t-student distribution (proposal distribution Metropolis-Hastings algorithm). Default: 6")
     it4<- selectInput("nu", "Degrees of Fredom: Multivariate t-Student:", 
                       choices = c("3", "4", "5", "6", "7", "8", "9", "10"), selected = "6")
+    NegBinAlpha=numericInput('NegBinAlpha','alpha',value = 2.93,min = 0.01)
+    
+    NegBinBeta=numericInput('NegBinBeta','Beta',value = 2.07,min = 0.01)
+    LogitTune=numericInput('LogitTune','Tune Parameter',value = 1.1,min = 0.01)
     
     #######Multivariate Models################
     #Simple Multivariate Equations

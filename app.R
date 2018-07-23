@@ -1,5 +1,5 @@
 
-
+library(shiny)
 # Define UI for Bayesian Econometrics: simulations, models and applications to research, teaching and encoding with responsibility
 image<- img(src="BEsmarterLogo.png", height = 200, width = "90%") #Local variable
 #file<- fileInput("file", label = h3("File input"))

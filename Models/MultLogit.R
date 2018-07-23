@@ -1,5 +1,6 @@
 MultinomialLogit<-function (Data, Prior, Mcmc) 
 {
+  library(MCMCpack)
   pandterm = function(message) {
     stop(message, call. = FALSE)
   }
