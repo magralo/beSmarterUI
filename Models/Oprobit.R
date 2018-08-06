@@ -16,7 +16,7 @@ Oprobit<- function (Data, Prior, Mcmc)
     return(sum(log(arg)))
   }
   dstarRwMetrop = function(y, mu, olddstar, s, inc.root, dstarbar, 
-                           oldll, rootdi) {
+                           oldll, rootdi) { ### esta s es la que debemos poner
     stay = 0
     dstarc = olddstar + s * t(inc.root) %*% (matrix(rnorm(ncut), 
                                                     ncol = 1))

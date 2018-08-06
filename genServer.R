@@ -43,7 +43,7 @@ library(matrixcalc)
     FormulaM2B<- textInput("Formula2b", "Instrumental Equation", value = "")
     HTFormZ<- helpText("Introduce Formula. Example: x1~z1+z2 where x1 is the independent variable with problems, and z1 and z2 are instruments. Model specification includes the constant term by default.")
     
-    m116numAlt<- sliderInput("m116numAlt", "Number of alternatives", value = "",min = 2,max = 20,step = 1)
+    m116numAlt<- sliderInput("m116numAlt", "Number of alternatives", value = 3,min = 3,max = 20,step = 1)
     PMean<- textInput("PMeanL", "Prior Mean Vector: Location Parameters", value = "")
     HTM<- helpText("Introduce prior mean vector location parameters. Example: c(0,0)")
     PVar<- textInput("PVarL", "Prior Covariance Matrix: Location Parameters", value = "")
@@ -101,7 +101,15 @@ library(matrixcalc)
                       choices = c("3", "4", "5", "6", "7", "8", "9", "10"), selected = "6")
     NegBinAlpha=numericInput('NegBinAlpha','alpha',value = 2.93,min = 0.01)
     
-    NegBinBeta=numericInput('NegBinBeta','Beta',value = 2.07,min = 0.01)
+    NegBinBeta=numericInput('NegBinBeta','Beta',value = 1,min = 0.01)
+    NegBinBetaCB=checkboxInput('NegBinBetaCB','Use default value for Beta? ',value = TRUE)
+    NegBinBetaHT<- helpText(" The default value for this parameter is 1/sqrt(# Regressors) ")
+    
+    OprobitS=numericInput('OprobitS','S',value = 1,min = 0.01)
+    OprobitSCB=checkboxInput('OprobitSCB','Use default value for S? ',value = TRUE)
+    OprobitSHT<- helpText(" The default value for this parameter is 1/sqrt(# options-2) ")
+    
+    
     LogitTune=numericInput('LogitTune','Tune Parameter',value = 1.1,min = 0.01)
     
     #######Multivariate Models################

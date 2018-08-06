@@ -240,15 +240,4 @@ NegBin<- function (Data, Prior, Mcmc)
 }
 
 
-# setwd("C:/andres_ramirez/Andres_EAFIT/Bayesian Econometrics/UserInterface/BEsmartV16/Data")
-# Data1<- read.table(file="DataNegativeBinomial.csv",header=TRUE,sep=",")
-# Data<-list(y=as.vector(Data1[,1]),X=as.matrix(Data1[,-1]))
-# Bmean<-c(0,0)
-# Bvar<- 0.01*diag(2)
-# Prior<- list(Bmean,Bvar)
-# MCMC<- list(R=1000,keep=20,burnin=100)
-# 
-# res<-NegBin(Data,Prior,MCMC)
-# res
-
 

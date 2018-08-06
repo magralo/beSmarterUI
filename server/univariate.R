@@ -147,7 +147,8 @@ sim=function(DF){
                                         helpText("Introduce prior mean for cut points"),  
                                         rHandsontableOutput("hotCmean"),
                                         helpText("Introduce prior covariances for cut points"),                                        
-                                        rHandsontableOutput("hotCvar")
+                                        rHandsontableOutput("hotCvar"),
+                                        fluidRow(column(3,OprobitSCB),column(3,OprobitS),column(5,OprobitSHT))
                                         )),
              "m117" = isolate(wellPanel(fluidRow(column(3,FormulaM1A),column(9,HTForm)),
                                         helpText("Introduce prior mean vector location parameters"),
@@ -156,7 +157,8 @@ sim=function(DF){
                                         rHandsontableOutput("hotPvar"), 
                                         fluidRow(column(3,Psh1),column(3,Psc1)),
                                         fluidRow(column(3,HTsh),column(3,HTsc)),
-                                        fluidRow(column(3,NegBinAlpha),column(3,NegBinBeta)) )),
+                                        fluidRow(column(3,NegBinAlpha))        , 
+                                        fluidRow(column(3,NegBinBetaCB),column(3,NegBinBeta),column(5,NegBinBetaHT)) )),
              "m118" =isolate(wellPanel(fluidRow(column(3,FormulaM1A),column(9,HTForm)),
                                        fluidRow(column(3,Below),column(3,HTBelow),column(3,Above),column(3,HTAbove)),
                                        helpText("Introduce prior mean vector location parameters"),
@@ -706,7 +708,10 @@ sim=function(DF){
     MCMC<- list(R=input$it,keep=as.numeric(input$keep),burnin=input$burnin)
     if(input$M11=='m117'){
       MCMC$s_alpha=input$NegBinAlpha
-      MCMC$s_beta=input$NegBinBeta
+      if(input$NegBinBetaCB){
+        MCMC$s_beta=input$NegBinBeta  
+      }
+      
     }
     MCMCML<- list(R=input$it,keep=as.numeric(input$keep),burnin=input$burnin,nu=as.numeric(input$nu))
     if(input$M11=='m110')
