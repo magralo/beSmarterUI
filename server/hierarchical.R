@@ -397,7 +397,9 @@ sim=function(DF){
           do.call(MCMChpoisson, args)}
       }
     }
-    showNotification("Done!")
+    
+
+    
     
   })
   
