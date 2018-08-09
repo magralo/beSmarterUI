@@ -361,6 +361,8 @@ sim=function(DF){
   
   ######## 3.1 Models: Posterior Chains#########
   Posteriors31 <- eventReactive(input$goButton31, {
+    showNotification("Running the Gibbs sampler. It may be long, keep cool :)")
+    
     # if(input$PMeanLFix==""){BmeanFix<-0}
     # else{
     #   tas<- sub("[c]",",",isolate(input$PMeanLFix))
