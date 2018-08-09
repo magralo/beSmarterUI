@@ -1,5 +1,4 @@
-
-getRegs=function(f){
+getRegs=function(f){ #function that get the variables given a formula
   if(f==""){
     return("null")
   }
@@ -95,7 +94,8 @@ sim=function(DF){
                                         helpText("Introduce prior covariance matrix of fixed effects."),
                                         rHandsontableOutput("hotPvarH"),
                                         fluidRow(column(3,PshHier),column(3,PscHier)),
-                                        fluidRow(column(3,HTMFix),column(3,HTVFix),column(3,HTshHier),column(3,HTscHier)),
+                                        #fluidRow(column(3,HTMFix),column(3,HTVFix),column(3,HTshHier),column(3,HTscHier)),
+                                        fluidRow(column(3,HTshHier),column(3,HTscHier)),
                                         #fluidRow(column(3,PshIWMPRandom),column(3,PVarIWMPRandom)),
                                         #fluidRow(column(3,HTshIWMPRandom),column(3,HTVIWMPRandom)),
                                         fluidRow(column(3,PshIWMPRandom)),
@@ -112,7 +112,8 @@ sim=function(DF){
                                         helpText("Introduce prior covariance matrix of fixed effects."),
                                         rHandsontableOutput("hotPvarH"),
                                         fluidRow(column(3,PshHier),column(3,PscHier)),
-                                        fluidRow(column(3,HTMFix),column(3,HTVFix),column(3,HTshHier),column(3,HTscHier)),
+                                        #fluidRow(column(3,HTMFix),column(3,HTVFix),column(3,HTshHier),column(3,HTscHier)),
+                                        fluidRow(column(3,HTshHier),column(3,HTscHier)),
                                         #fluidRow(column(3,PshIWMPRandom),column(3,PVarIWMPRandom)),
                                         #fluidRow(column(3,HTshIWMPRandom),column(3,HTVIWMPRandom)),
                                         fluidRow(column(3,PshIWMPRandom)),
@@ -126,6 +127,7 @@ sim=function(DF){
   
   
   
+  
   output$hotPmeanH=renderRHandsontable({
     
     if(is.null(input$hotPmeanH) ){
@@ -133,10 +135,14 @@ sim=function(DF){
       f=input$Formula3a
       
       DF=data.frame("Prior mean"=rep(0,nv))
+      print(f)
       rownames(DF)=getRegs(f)
+      
+      
     }else{
       DF=hot_to_r(input$hotPmeanH)
-      rn=rownames(DF)
+      rn=rownames(DF)[-1]
+      
       f=input$Formula3a
       if(!identical(rn,getRegs(f))){
         f=input$Formula3a
@@ -148,18 +154,26 @@ sim=function(DF){
           rownames(DF)="null"
         }else{
           
-          regs=getRegs(f)
-          DF=data.frame("Prior mean"=rep(0,length(regs)))
-          rownames(DF)=regs
+          
+            regs=getRegs(f)
+            DF=data.frame("Prior mean"=rep(0,length(regs)+1))
+            rownames(DF)=c("cte",regs)
+          
+          
           
         }
         
       }
       
     }
-    rhandsontable(DF)
+    DF$Prior.mean=as.numeric(DF$Prior.mean)
+    
+    rhandsontable(DF)%>% 
+      hot_col("Prior.mean",format="0.01")
     
   })
+  
+ 
   
   output$hotPvarH=renderRHandsontable({
     
@@ -168,11 +182,16 @@ sim=function(DF){
       f=input$Formula3a
       
       DF=data.frame("Prior mean"=0)
-      rownames(DF)=getRegs(f)
-      colnames(DF)=getRegs(f)
+      
+        rownames(DF)=getRegs(f)
+        colnames(DF)=getRegs(f)
+      
+      
     }else{
       DF=hot_to_r(input$hotPvarH)
-      rn=rownames(DF)
+      
+        rn=rownames(DF)[-1]
+      
       f=input$Formula3a
       if(!identical(rn,getRegs(f))){
         f=input$Formula3a
@@ -185,25 +204,46 @@ sim=function(DF){
         }else{
           
           regs=getRegs(f)
-          DF=data.frame(diag(length(regs)))
-          rownames(DF)=regs
-          colnames(DF)=regs
+          
+          
+            DF=data.frame(diag(length(regs)+1))
+            rownames(DF)=c("cte",getRegs(f))
+            colnames(DF)=c("cte",getRegs(f))
+          
           
         }
         
       }
       
     }
-    rhandsontable(sim(DF))%>%
-      hot_cols(renderer = "
-               function (instance, td, row, col, prop, value, cellProperties) {
-               Handsontable.renderers.TextRenderer.apply(this, arguments);
-               if (col < row) {
-               td.style.background = 'black';
-               } 
-               }")
+    DF=sim(DF)
+    x=as.matrix(DF)
+    bool=is.positive.semi.definite(x, tol=1e-8)
+    if(bool){
+      rv$warningSDP=""
+      rhandsontable(DF)%>%
+        hot_cols(renderer = "
+                 function (instance, td, row, col, prop, value, cellProperties) {
+                 Handsontable.renderers.TextRenderer.apply(this, arguments);
+                 if (col < row) {
+                 td.style.background = 'black';
+                 } 
+                 }")
+    }else{
+      showNotification("Watch out! the red covariance matrix is not positive semi definite")
+      rhandsontable(DF)%>%
+        hot_cols(renderer = "
+                 function (instance, td, row, col, prop, value, cellProperties) {
+                 Handsontable.renderers.TextRenderer.apply(this, arguments);
+                 
+                 td.style.background = 'red';
+                 
+                 }")
+      
+    }
     
-  })
+    })
+  
   
   output$hotPvarH2=renderRHandsontable({
     
@@ -212,11 +252,16 @@ sim=function(DF){
       f=input$Formula3b
       
       DF=data.frame("Prior mean"=0)
+      
       rownames(DF)=getRegs(f)
       colnames(DF)=getRegs(f)
+      
+      
     }else{
       DF=hot_to_r(input$hotPvarH2)
-      rn=rownames(DF)
+      
+      rn=rownames(DF)[-1]
+      
       f=input$Formula3b
       if(!identical(rn,getRegs(f))){
         f=input$Formula3b
@@ -229,26 +274,90 @@ sim=function(DF){
         }else{
           
           regs=getRegs(f)
-          DF=data.frame(diag(length(regs)))
-          rownames(DF)=regs
-          colnames(DF)=regs
+          
+          
+          DF=data.frame(diag(length(regs)+1))
+          rownames(DF)=c("cte",getRegs(f))
+          colnames(DF)=c("cte",getRegs(f))
+          
           
         }
         
       }
       
     }
-    rhandsontable(sim(DF))%>%
-      hot_cols(renderer = "
-               function (instance, td, row, col, prop, value, cellProperties) {
-               Handsontable.renderers.TextRenderer.apply(this, arguments);
-               if (col < row) {
-               td.style.background = 'black';
-               } 
-               }")
+    DF=sim(DF)
+    x=as.matrix(DF)
+    bool=is.positive.semi.definite(x, tol=1e-8)
+    if(bool){
+      rv$warningSDP=""
+      rhandsontable(DF)%>%
+        hot_cols(renderer = "
+                 function (instance, td, row, col, prop, value, cellProperties) {
+                 Handsontable.renderers.TextRenderer.apply(this, arguments);
+                 if (col < row) {
+                 td.style.background = 'black';
+                 } 
+                 }")
+    }else{
+      showNotification("Watch out! the red covariance matrix is not positive semi definite")
+      rhandsontable(DF)%>%
+        hot_cols(renderer = "
+                 function (instance, td, row, col, prop, value, cellProperties) {
+                 Handsontable.renderers.TextRenderer.apply(this, arguments);
+                 
+                 td.style.background = 'red';
+                 
+                 }")
+      
+    }
     
-  })
+    })
   
+  # output$hotPvarH2=renderRHandsontable({
+  #   
+  #   if(is.null(input$hotPvarH2) ){
+  #     nv = 1
+  #     f=input$Formula3b
+  #     
+  #     DF=data.frame("Prior mean"=0)
+  #     rownames(DF)=getRegs(f)
+  #     colnames(DF)=getRegs(f)
+  #   }else{
+  #     DF=hot_to_r(input$hotPvarH2)
+  #     rn=rownames(DF)
+  #     f=input$Formula3b
+  #     if(!identical(rn,getRegs(f))){
+  #       f=input$Formula3b
+  #       nv=unlist(gregexpr(pattern ='~',f))
+  #       
+  #       if(nv==-1){
+  #         nv = 1
+  #         DF=data.frame("Prior mean"=0)
+  #         rownames(DF)="null"
+  #       }else{
+  #         
+  #         regs=getRegs(f)
+  #         DF=data.frame(diag(length(regs)))
+  #         rownames(DF)=regs
+  #         colnames(DF)=regs
+  #         
+  #       }
+  #       
+  #     }
+  #     
+  #   }
+  #   rhandsontable(sim(DF))%>%
+  #     hot_cols(renderer = "
+  #              function (instance, td, row, col, prop, value, cellProperties) {
+  #              Handsontable.renderers.TextRenderer.apply(this, arguments);
+  #              if (col < row) {
+  #              td.style.background = 'black';
+  #              } 
+  #              }")
+  #   
+  # })
+  # 
   
   ######## 3.1 Models: Posterior Chains#########
   Posteriors31 <- eventReactive(input$goButton31, {
