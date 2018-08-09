@@ -314,54 +314,12 @@ sim=function(DF){
     
     })
   
-  # output$hotPvarH2=renderRHandsontable({
-  #   
-  #   if(is.null(input$hotPvarH2) ){
-  #     nv = 1
-  #     f=input$Formula3b
-  #     
-  #     DF=data.frame("Prior mean"=0)
-  #     rownames(DF)=getRegs(f)
-  #     colnames(DF)=getRegs(f)
-  #   }else{
-  #     DF=hot_to_r(input$hotPvarH2)
-  #     rn=rownames(DF)
-  #     f=input$Formula3b
-  #     if(!identical(rn,getRegs(f))){
-  #       f=input$Formula3b
-  #       nv=unlist(gregexpr(pattern ='~',f))
-  #       
-  #       if(nv==-1){
-  #         nv = 1
-  #         DF=data.frame("Prior mean"=0)
-  #         rownames(DF)="null"
-  #       }else{
-  #         
-  #         regs=getRegs(f)
-  #         DF=data.frame(diag(length(regs)))
-  #         rownames(DF)=regs
-  #         colnames(DF)=regs
-  #         
-  #       }
-  #       
-  #     }
-  #     
-  #   }
-  #   rhandsontable(sim(DF))%>%
-  #     hot_cols(renderer = "
-  #              function (instance, td, row, col, prop, value, cellProperties) {
-  #              Handsontable.renderers.TextRenderer.apply(this, arguments);
-  #              if (col < row) {
-  #              td.style.background = 'black';
-  #              } 
-  #              }")
-  #   
-  # })
+  
   # 
   
   ######## 3.1 Models: Posterior Chains#########
   Posteriors31 <- eventReactive(input$goButton31, {
-    showNotification("Trying to run the Gibbs sampler. It may be long, keep cool :)")
+    showNotification("Working on it. Trying to run gibbs sampler")
     
     # if(input$PMeanLFix==""){BmeanFix<-0}
     # else{
